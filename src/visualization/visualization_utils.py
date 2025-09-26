@@ -353,22 +353,46 @@ class DataVisualizer:
         # Ensure diagonal is exactly 1.0 for self-correlations
         np.fill_diagonal(corr_matrix.values, 1.0)
         
-        # Create mask for upper triangle (excluding diagonal)
-        mask = np.triu(np.ones_like(corr_matrix, dtype=bool), k=1)
+        # COVID-19 key variables for special handling
+        covid_vars = ['positif', 'sembuh', 'meninggal']
+        
+        # Create mask for lower triangle (excluding diagonal) but keep COVID-COVID correlations visible
+        mask = np.tril(np.ones_like(corr_matrix, dtype=bool), k=-1)
+        # Ensure COVID variable correlations are always visible
+        for i, var1 in enumerate(corr_matrix.index):
+            for j, var2 in enumerate(corr_matrix.columns):
+                if var1 in covid_vars and var2 in covid_vars and i != j:
+                    mask[i, j] = False  # Make COVID-COVID correlations visible
         
         # Generate heatmap with enhanced visualization
-        sns.heatmap(corr_matrix, mask=mask, annot=True, cmap='RdBu_r', 
+        ax = sns.heatmap(corr_matrix, mask=mask, annot=True, cmap='RdBu_r', 
                    center=0, square=True, cbar_kws={"shrink": 0.8, "label": "Correlation Coefficient"},
-                   fmt='.3f', annot_kws={'size': 8}, linewidths=0.5)
+                   fmt='.3f', annot_kws={'size': 20}, linewidths=0.5)
         
-        plt.title('Correlation Matrix - All Variables\n(Including COVID-19 Key Variables)', 
-                 fontsize=16, fontweight='bold')
-        plt.xlabel('Variables', fontsize=12)
-        plt.ylabel('Variables', fontsize=12)
+        cbar = ax.collections[0].colorbar
+        cbar.set_label("Correlation Coefficient", fontsize=16, fontweight='normal')  # label besar
+        cbar.ax.tick_params(labelsize=16)  # angka skala besar
         
-        # Rotate labels for better readability
-        plt.xticks(rotation=45, ha='right')
+        plt.title('Matriks Korelasi Semua Variabel\n', 
+                 fontsize=25, fontweight='bold')
+        plt.xlabel('Variabel', fontsize=15)
+        plt.ylabel('Variabel', fontsize=15)
+        
+        # Consistent label formatting - horizontal for better readability
+        plt.xticks(rotation=0, ha='center')
         plt.yticks(rotation=0)
+        
+        for label in ax.get_xticklabels():
+            if label.get_text() in covid_vars:
+                label.set_fontsize(16)
+                label.set_fontweight('normal')
+                label.set_color('black')  # opsional, biar lebih menonjol
+    
+        for label in ax.get_yticklabels():
+            if label.get_text() in covid_vars:
+                label.set_fontsize(16)
+                label.set_fontweight('normal')
+                label.set_color('black')
         
         plt.tight_layout()
         return self.save_plot('correlation_matrix', IMG_INTEGRATION_DIR)
@@ -381,30 +405,47 @@ class DataVisualizer:
         corr_matrix = correlation_matrix.copy()
         np.fill_diagonal(corr_matrix.values, 1.0)
         
-        # Filter correlations below threshold (but keep diagonal)
+        # COVID-19 key variables for special handling
+        covid_vars = ['positif', 'sembuh', 'meninggal']
+        
+        # Filter correlations below threshold (but keep diagonal and COVID-COVID correlations)
         correlation_filtered = corr_matrix.copy()
-        # Set to NaN (not 0) for values below threshold, but keep diagonal
+        # Set to NaN (not 0) for values below threshold, but keep diagonal and COVID correlations
         for i in range(len(correlation_filtered)):
             for j in range(len(correlation_filtered.columns)):
-                if i != j and abs(correlation_filtered.iloc[i, j]) < threshold:
-                    correlation_filtered.iloc[i, j] = np.nan
+                var1 = correlation_filtered.index[i]
+                var2 = correlation_filtered.columns[j]
+                
+                if i != j:  # Not diagonal
+                    # Keep COVID-COVID correlations regardless of threshold
+                    if var1 in covid_vars and var2 in covid_vars:
+                        continue  # Keep these correlations visible
+                    # Filter other correlations by threshold
+                    elif abs(correlation_filtered.iloc[i, j]) < threshold:
+                        correlation_filtered.iloc[i, j] = np.nan
         
-        # Create mask for upper triangle (excluding diagonal)
-        mask = np.triu(np.ones_like(correlation_filtered, dtype=bool), k=1)
+        # Create mask for lower triangle (excluding diagonal) but show COVID-COVID correlations
+        mask = np.tril(np.ones_like(correlation_filtered, dtype=bool), k=-1)
+        
+        # Ensure COVID variable correlations are always visible
+        for i, var1 in enumerate(correlation_filtered.index):
+            for j, var2 in enumerate(correlation_filtered.columns):
+                if var1 in covid_vars and var2 in covid_vars and i != j:
+                    mask[i, j] = False  # Make COVID-COVID correlations visible
         
         # Use custom colormap that handles NaN properly
         sns.heatmap(correlation_filtered, mask=mask, annot=True, cmap='RdBu_r', 
                    center=0, square=True, cbar_kws={"shrink": 0.8, "label": "Correlation Coefficient"},
-                   fmt='.3f', annot_kws={'size': 8}, linewidths=0.5,
+                   fmt='.3f', annot_kws={'size': 20}, linewidths=0.5,
                    cbar=True)
         
-        plt.title(f'Significant Correlations Matrix (|r| ≥ {threshold})\nIncluding Perfect Self-Correlations (diagonal = 1.0)', 
+        plt.title(f'Significant Correlations Matrix (|r| ≥ {threshold})\nCOVID Variables Always Shown: {", ".join(covid_vars)}', 
                  fontsize=16, fontweight='bold')
         plt.xlabel('Variables', fontsize=12)
         plt.ylabel('Variables', fontsize=12)
         
-        # Rotate labels for better readability
-        plt.xticks(rotation=45, ha='right')
+        # Consistent label formatting - horizontal for better readability
+        plt.xticks(rotation=0, ha='center')
         plt.yticks(rotation=0)
         
         plt.tight_layout()

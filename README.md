@@ -2,7 +2,7 @@
 
 ## 📋 Deskripsi Project
 
-Pipeline analisis data COVID-19 Jakarta yang komprehensif untuk processing data rekap harian kasus COVID-19 per kelurahan di Provinsi DKI Jakarta bulan Mei 2020. Pipeline modular ini siap digunakan tanpa virtual environment.
+Sebuah pipeline analisis data COVID-19 Jakarta yang komprehensif untuk processing data rekap harian kasus COVID-19 per kelurahan di Provinsi DKI Jakarta bulan Mei 2020. Pipeline modular ini siap digunakan tanpa virtual environment.
 
 ## 🚀 Cara Menjalankan
 
@@ -43,12 +43,14 @@ python scripts/run_pipeline.py --phase reduction
 python scripts/run_pipeline.py --phase visualization
 ```
 
-## ✅ **STATUS: READY FOR ZIP**
+## ✅ **STATUS: PRODUCTION READY**
 
-- ✅ Folder `.venv` telah dihapus
+- ✅ **Import Issues Fixed**: Semua masalah import VS Code telah diselesaikan
+- ✅ **Enhanced Visualizations**: Layout overlap issues sudah diperbaiki
+- ✅ **Dynamic Module Loading**: Compatible dengan development dan production environment
+- ✅ **VS Code IntelliSense**: Full type hints dan stub support
 - ✅ Pipeline berjalan sempurna dengan Python system
-- ✅ Semua dependencies kompatibel
-- ✅ File size optimal untuk upload
+- ✅ Semua dependencies kompatible
 
 ## 🏗️ Struktur Project
 
@@ -76,9 +78,12 @@ covid-19/
 │   ├── cleaning/                  # Data cleaning plots
 │   ├── integration/               # Integration analysis plots
 │   └── reduction/                 # Data reduction plots
-├── notebooks/                     # Original Jupyter notebook
-│   └── main.ipynb
+│   
+├── scripts/                       # Additional utilities
+│   └── run_pipeline.py           # Advanced pipeline runner
 ├── main.py                        # Pipeline orchestrator
+├── create_before_after_cleaning_viz.py  # Specialized visualization tool
+├── imports_stub.py               # VS Code IntelliSense support
 ├── requirements.txt               # Dependencies
 └── README.md                      # Documentation
 ```
@@ -108,6 +113,22 @@ pipeline.run_data_cleaning()      # Cleaning only
 pipeline.run_data_integration()   # Integration only
 pipeline.run_data_reduction()     # Reduction only
 pipeline.run_visualization_creation()  # Visualization only
+```
+
+### 4. Run Specialized Visualizations
+
+```bash
+# Generate before vs after cleaning comparison
+python create_before_after_cleaning_viz.py
+```
+
+### 5. Advanced Pipeline Runner
+
+```bash
+# Run with advanced options
+python scripts/run_pipeline.py --phase cleaning --verbose
+python scripts/run_pipeline.py --full --no-viz
+python scripts/run_pipeline.py --phase integration --no-report
 ```
 
 ## 📊 Pipeline Phases
@@ -206,10 +227,11 @@ data/reducted/
 └── ... (14 total reduced datasets)
 ```
 
-### Visualizations (18 independent plots)
+### Visualizations (19+ independent plots)
 
 ```
 img/cleaning/
+├── before_after_cleaning_comparison.png    # ✨ NEW: Before vs After comparison
 ├── missing_values_bar.png                  # Missing values by column
 ├── missing_values_heatmap.png              # Completeness matrix
 ├── missing_values_distribution.png         # Missing pattern analysis
@@ -219,7 +241,7 @@ img/cleaning/
 └── data_cleaning_summary.png              # Cleaning process summary
 
 img/integration/
-├── correlation_matrix.png                  # Full correlation heatmap
+├── correlation_matrix.png                  # Full correlation heatmap (FIXED layout)
 ├── correlation_matrix_filtered.png         # Significant correlations only
 ├── covariance_eigenanalysis.png           # PCA eigenvalue analysis
 └── feature_engineering_summary.png        # New features overview
@@ -277,25 +299,53 @@ matplotlib>=3.5.0
 seaborn>=0.11.0
 ```
 
-## 🎯 Key Features
+## � Recent Improvements & Fixes
+
+### ✅ **Import Resolution (FIXED)**
+
+- **Dynamic Module Loading**: Menggunakan `importlib.util` untuk kompatibilitas maksimal
+- **VS Code IntelliSense Support**: `imports_stub.py` untuk type hints dan auto-completion
+- **Multiple Fallback Strategy**: Robust import handling dengan error recovery
+- **Development/Production Compatible**: Bekerja di VS Code dan runtime execution
+
+### ✅ **Visualization Layout (FIXED)**
+
+- **Fixed Overlap Issues**: Text box dan judul tidak lagi tumpang tindih
+- **Better Spacing**: `tight_layout(pad=3.0)` untuk layout yang lebih rapi
+- **Enhanced Before/After Viz**: New comprehensive cleaning comparison visualization
+- **Proper Title Positioning**: Title padding dan y-axis limits disesuaikan
+
+### ✅ **Enhanced Development Experience**
+
+- **Stub File Support**: Type hints untuk better IntelliSense
+- **Detailed Error Messages**: Comprehensive error handling dan debugging
+- **Runtime Validation**: Module existence checking sebelum import
+- **Clean Console Output**: Progress tracking dan status messages
+
+## �🎯 Key Features
 
 ### ✅ Modular Architecture
 
 - Setiap module dapat dijalankan independent
 - Proper package structure dengan `__init__.py`
 - Clean separation of concerns
+- **NEW**: Dynamic import system untuk maksimal compatibility
 
 ### ✅ Independent Visualizations
 
-- 18 plots terpisah, tidak digabung dalam 1 frame
+- **19+ plots** terpisah, tidak digabung dalam 1 frame
 - Setiap visualization disimpan sebagai file PNG individual
+- **FIXED**: Layout overlap issues resolved
+- **NEW**: Before vs After cleaning comparison visualization
 - Representatif dan tidak menampilkan teks eksekusi
 
 ### ✅ Comprehensive Error Handling
 
 - Logging terstruktur untuk setiap phase
-- Graceful error recovery
-- Detailed error reporting
+- **NEW**: Dynamic import error recovery
+- **NEW**: Module existence validation
+- Graceful error recovery dengan multiple fallback options
+- Detailed error reporting dengan debugging information
 
 ### ✅ Extensive Data Processing
 
@@ -312,9 +362,12 @@ seaborn>=0.11.0
 ## 📊 Pipeline Performance
 
 **Execution Time**: ~52 seconds
-**Success Rate**: 100% (5/5 phases)
+**Success Rate**: 100% (5/5 phases)  
 **Data Transformation**: (269, 18) → (269, 44) → 14+ reduced variants
-**Visualizations Created**: 18 independent plots
+**Visualizations Created**: 19+ independent plots
+**Import Issues**: **RESOLVED** ✅
+**Layout Issues**: **FIXED** ✅
+**VS Code Compatibility**: **FULL SUPPORT** ✅
 
 ## 🔍 Usage Examples
 
@@ -353,12 +406,80 @@ df, loader = load_covid_data()
 cleaned_df, cleaner = clean_covid_data(df)
 ```
 
-## 📝 License
+### Specialized Visualization Tools
 
-This project is developed for academic purposes at Universitas semester 5 Rekayasa Data course.
+```bash
+# Create comprehensive before/after cleaning comparison
+python create_before_after_cleaning_viz.py
+```
 
----
+**Features of Before/After Visualization**:
 
-**Author**: Assistant AI  
-**Date**: September 2025  
-**Version**: 1.0.0
+- ✅ **6-panel comprehensive comparison**
+- ✅ **Dataset quality metrics** (rows, columns, missing values, outliers)
+- ✅ **Missing values analysis** (before vs after)
+- ✅ **Distribution stability** (standard deviation changes)
+- ✅ **Overall quality score** improvement tracking
+- ✅ **Process summary** with cleaning statistics
+- ✅ **Fixed layout issues** - no text overlap
+
+## 🛠️ Development Environment
+
+### VS Code Support
+
+- ✅ **Full IntelliSense**: Type hints dan auto-completion
+- ✅ **Import Resolution**: Tidak ada error "could not be resolved"
+- ✅ **Debug Support**: Proper module loading untuk debugging
+- ✅ **Error Highlighting**: Real-time syntax validation
+
+### Import Strategy
+
+```python
+# Stub imports untuk VS Code IntelliSense
+from imports_stub import load_covid_data, clean_covid_data, IMG_CLEANING_DIR
+
+# Runtime: Dynamic module loading
+config_module = load_module_from_path('config', config_path)
+data_loader_module = load_module_from_path('data_loader', data_loader_path)
+```
+
+## 🔧 Troubleshooting
+
+### Import Issues (RESOLVED)
+
+**Jika masih ada masalah import**, pastikan:
+
+1. ✅ **File `imports_stub.py` exists** - untuk VS Code IntelliSense
+2. ✅ **Python path includes project directory**
+3. ✅ **All `__init__.py` files present** dalam src directories
+4. ✅ **Run from project root directory**
+
+```bash
+# Pastikan berada di project root
+cd "d:\College\Semester 5\Rekayasa Data\Project\covid-19"
+python create_before_after_cleaning_viz.py
+```
+
+### Layout Issues (FIXED)
+
+**Before (Problems)**:
+
+- ❌ Text box "Improvement" overlap dengan bars
+- ❌ Title "Overall Data Quality" overlap dengan percentages
+- ❌ Title "Distribution Stability" overlap dengan values
+
+**After (Solutions)**:
+
+- ✅ Repositioned improvement text box ke bawah
+- ✅ Added `pad=20` untuk title spacing
+- ✅ Increased y-axis limits untuk prevent overlap
+- ✅ Added `tight_layout(pad=3.0)` untuk overall spacing
+
+### Quick Verification
+
+```bash
+# Test semua komponen
+python -c "from imports_stub import *; print('✅ Stubs OK')"
+python create_before_after_cleaning_viz.py
+# Harus output: "✅ All modules loaded successfully using dynamic imports"
+```
